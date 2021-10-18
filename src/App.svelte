@@ -25,6 +25,7 @@
     loading = true;
     let returnedData = await fetch(`/api`, { method: "post", body: JSON.stringify({ identifier }), type: "application/json" }).then((r) => r.json());
     if (returnedData.status === "success") {
+      selectedFormat = null;
       data = returnedData.data;
       error = null;
     } else {
