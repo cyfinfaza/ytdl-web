@@ -4,13 +4,22 @@
   let idInput;
   let loading = false;
   let error = null;
+  let selectedFormat = null;
   $: {
     let url = new URL(window.location.href);
+    const params = {};
     if (data?.id) {
-      url.search = new URLSearchParams({ v: data.id }).toString();
+      params.v = data.id;
+    }
+    if (typeof selectedFormat == "number") {
+      params.fmt = selectedFormat;
+    }
+    if (Object.keys(params).length) {
+      url.search = new URLSearchParams(params).toString();
       history.pushState(null, null, url);
     }
   }
+  $: embedLink = `${window.location.origin}/watch?v=${data?.id}&fmt=${selectedFormat}`;
   async function update(identifier) {
     console.log(identifier);
     loading = true;
@@ -25,8 +34,12 @@
   }
   onMount(async (_) => {
     let searchParamIdenfier = new URLSearchParams(window.location.search).get("v");
+    let searchParamFormat = new URLSearchParams(window.location.search).get("fmt");
     if (searchParamIdenfier) {
       update(searchParamIdenfier);
+    }
+    if (searchParamFormat) {
+      selectedFormat = parseInt(searchParamFormat);
     }
   });
 </script>
@@ -61,10 +74,44 @@
         <p>by <a href={data.uploader_url}>{data.uploader}</a></p>
       </div>
     </div>
-    <h2>Download Formats</h2>
+    <h2>Selected Format</h2>
+    {#if typeof selectedFormat == "number"}
+      <div class="horizPanel" style="width: 100%; gap: 32px;">
+        <video src={data.formats[selectedFormat].url} style="width: 35%; background: #222;" alt="" controls />
+        <div class="vertiPanel" style="gap: 12px; flex: 1;">
+          <details>
+            <summary style="font-size: 1.2em; font-weight: bold;">{data.formats[selectedFormat].format_note} ({data.formats[selectedFormat].ext}, fmt index {selectedFormat})</summary>
+            <div class="vertiPanel" style="gap: 8px; padding: 8px">
+              {#if data.formats[selectedFormat].vcodec !== "none"}
+                <h4>Video</h4>
+                <p>
+                  {data.formats[selectedFormat].width}x{data.formats[selectedFormat].height} @ {data.formats[selectedFormat].fps}fps ({data.formats[selectedFormat].vcodec})
+                </p>
+              {/if}
+              {#if data.formats[selectedFormat].acodec !== "none"}
+                <h4>Audio</h4>
+                <p>
+                  {data.formats[selectedFormat].asr / 1000}khz @ {data.formats[selectedFormat].abr}kbps ({data.formats[selectedFormat].acodec})
+                </p>
+              {/if}
+            </div>
+          </details>
+          <!-- <h4>Link</h4> -->
+          <div class="horizPanel" style="gap: 8px;">
+            <a href={data.formats[selectedFormat].url} class="button" target="_blank">View</a>
+            <a href={data.formats[selectedFormat].url} class="button" download={data.title + "." + data.formats[selectedFormat].ext}>Download</a>
+          </div>
+          <h4>Embed</h4>
+          <code>{'<video src="'}<a href={embedLink}>{embedLink}</a>{'"> </video>'}</code>
+        </div>
+      </div>
+    {:else}
+      <p>Select an available format below</p>
+    {/if}
+    <h2>Available Formats</h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); width: 100%; gap: 16px;">
-      {#each data.formats as format}
-        <div class="card">
+      {#each data.formats as format, i}
+        <div class={`card button ${selectedFormat === i && "card_selected"}`} style="user-select: none; cursor: pointer;" on:click={(_) => (selectedFormat = i)}>
           <div>
             <div class="vertiPanel" style="gap: 8px">
               <h3>{format.format_note} ({format.ext})</h3>
@@ -82,12 +129,12 @@
               {/if}
             </div>
           </div>
-          <div>
+          <!-- <div>
             <div class="horizPanel" style="gap: 8px;">
               <a href={format.url} class="button" target="_blank">View</a>
               <a href={format.url} class="button" download={data.title + "." + format.ext}>Download</a>
             </div>
-          </div>
+          </div> -->
         </div>
       {/each}
     </div>
@@ -104,6 +151,9 @@
     gap: 16px;
     > * {
       margin: 0;
+    }
+    > h2 {
+      margin-top: 8px;
     }
   }
   .horizPanel {
@@ -126,7 +176,7 @@
   .card {
     padding: 16px;
     border-radius: 8px;
-    background-color: #fff2;
+    // background-color: #fff2;
     gap: 16px;
     display: flex;
     flex-direction: column;
@@ -142,7 +192,12 @@
       justify-content: flex-end;
     }
   }
-  img {
+  .card_selected {
+    background-color: #fff;
+    color: black;
+  }
+  img,
+  video {
     border-radius: 6px;
   }
 </style>

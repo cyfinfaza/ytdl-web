@@ -52,8 +52,12 @@ def watch():
     if not id:
         return error_json("No identifier specified"), 400
     try:
+        try:
+            fmt = int(request.args.get("fmt"))
+        except:
+            fmt = None
         data = ytdl.extract_info(id, download=False)
-        return redirect(data["formats"][-1]["url"], 302)
+        return redirect(data["formats"][fmt if fmt else -1]["url"], 302)
     except Exception as e:
         return error_json(str(e))
 
