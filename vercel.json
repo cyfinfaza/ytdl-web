@@ -1,11 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/api*",
+      "source": "/api",
       "destination": "/api/app.py"
     },
     {
-      "source": "/watch*",
+      "source": "/watch",
       "destination": "/api/app.py"
     }
   ]
