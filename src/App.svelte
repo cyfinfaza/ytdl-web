@@ -14,7 +14,7 @@
   async function update(identifier) {
     console.log(identifier);
     loading = true;
-    let returnedData = await fetch(`http://localhost:5000/api`, { method: "post", body: JSON.stringify({ identifier }), type: "application/json" }).then((r) => r.json());
+    let returnedData = await fetch(`/api`, { method: "post", body: JSON.stringify({ identifier }), type: "application/json" }).then((r) => r.json());
     if (returnedData.status === "success") {
       data = returnedData.data;
       error = null;
