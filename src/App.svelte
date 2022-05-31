@@ -99,8 +99,9 @@
           </details>
           <!-- <h4>Link</h4> -->
           <div class="horizPanel" style="gap: 8px;">
-            <a href={data.formats[selectedFormat].url} class="button" target="_blank">View</a>
-            <a href={data.formats[selectedFormat].url} class="button" download={data.title + "." + data.formats[selectedFormat].ext}>Download</a>
+            <!-- <a href={data.formats[selectedFormat].url} class="button" target="_blank">View</a> -->
+            <span>To download, press ⋮ &rarr; Download</span>
+            <!-- <a href={data.formats[selectedFormat].url} class="button" download={data.title + "." + data.formats[selectedFormat].ext}>Download</a> -->
           </div>
           <h4>Embed</h4>
           <code>{'<video src="'}<a href={embedLink}>{embedLink}</a>{'"> </video>'}</code>
