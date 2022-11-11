@@ -4,7 +4,8 @@ from flask_cors import CORS
 from youtube_dl import YoutubeDL
 import json
 
-ytdl = YoutubeDL({"outtmpl": "%(id)s%(ext)s"})
+ytdl = YoutubeDL({"outtmpl": "%(id)s%(ext)s",
+                 "nocheckcertificate": True, "extract_flat": 'in_playlist', "dump_single_json": True})
 
 app = Flask(__name__)
 CORS(app)
